@@ -1,1 +1,361 @@
+#include <iostream>
+#define SPACE 10
 
+using namespace std;
+
+class TreeNode{
+    public:
+        //attributes
+        int data;
+        TreeNode *right;
+        TreeNode *left;
+        //Constructors
+        TreeNode(){
+            data=0;
+            left = NULL;
+            right = NULL;
+        }
+        TreeNode(int d){
+            data = d;
+            left = NULL;
+            right = NULL;
+        }
+        
+};
+
+class BST{
+    public:
+        //attributes
+        TreeNode *root;
+        
+        BST(){
+            root=NULL;
+        }
+    public:
+    //Methods
+        bool isTreeEmpty()//check if empty
+        {
+            if (root == NULL)
+                return true;
+            else
+                return false;            
+        }
+        //search item
+        TreeNode* search(TreeNode *root,int value)
+        {
+            if(root == NULL )
+            {
+                return root;
+                
+            }
+            else
+            {
+                
+                TreeNode *temp = root;
+             
+                if(temp->data == value)
+                {
+                    cout<<"Value found in the Tree!"<<endl;
+                    return temp;
+                }
+                else if(temp->data > value)
+                {  
+                    search(temp->left, value);
+                }
+                else 
+                {
+                    search(temp->right, value);
+                }
+                    
+            
+            }
+            return root;
+        }
+        //insert a new node
+        void insert(TreeNode *new_Node){
+
+            if (root == NULL)
+            {
+                root = new_Node;
+                cout<<"The new Node has been inserted successfully as the root!"<<endl;
+            }
+            else
+            {
+                TreeNode *temp = root;
+                while(temp != NULL)
+                {
+                    if(new_Node->data == temp->data)
+                    {
+                        cout<<"Value already exists, duplicates are not permitted!"<<endl;
+                        return;
+                    }
+                    else if((new_Node->data < temp->data) && (temp->left ==NULL))
+                    {
+                        temp->left = new_Node;
+                        cout<<"Value inserted to the left !"<<endl;
+                        break;
+                    }
+                    else if ((new_Node->data > temp->data) && (temp->right == NULL))
+                    {
+                        temp->right = new_Node;
+                        cout<<"Value inserted to the right!"<<endl;
+                        break;
+                    }
+                    else if(new_Node->data < temp->data)
+                    {
+                        temp = temp->left;
+                    }
+                    else{
+                        temp = temp->right;
+                    }
+               }
+            }
+        }
+        //
+        TreeNode* minValue(TreeNode *root)
+        {
+            while(root->left != NULL) 
+                {
+                    root = root->left;
+                }
+            return root;
+        }
+        //delete Node
+        TreeNode* deleteNode(TreeNode *root, int value)
+        {
+            if (root == NULL)
+            {   cout<<"The desired value does not exit in the BST"<<endl;
+                return root;
+            }
+            else if (value < root->data)
+            {
+                root->left = deleteNode(root->left, value);             
+            }
+            else if (value > root->data)
+            {
+                root->right = deleteNode(root->right, value);             
+            }
+            //when you find the Node that you want to delete
+            else
+            {
+                // Case 1:  No child
+                if(root->left == NULL && root->right == NULL) 
+                { 
+                    delete root;
+                    root = NULL;
+                }
+                //Case 2: One child 
+                else if(root->left == NULL) 
+                {
+                    TreeNode *temp = root;
+                    root = root->right;
+                    delete temp;
+                }
+                else if(root->right == NULL) 
+                {
+                    TreeNode *temp = root;
+                    root = root->left;
+                    delete temp;
+                }
+                // case 3: 2 children
+                else
+                { 
+                    TreeNode *temp = minValue(root->right);
+                    root->data = temp->data;
+                    root->right = deleteNode(root->right,temp->data);
+                }
+            
+            }   
+            return root;
+        } 
+        
+    
+        //depth first traversal 
+        void printPreorder(TreeNode *root){
+            if (root == NULL)
+                return;
+ 
+            /* first print data of node */
+            cout << root->data << " ";
+ 
+            /* then recur on left sutree */
+            printPreorder(root->left);
+ 
+            /* now recur on right subtree */
+            printPreorder(root->right);
+        }
+        
+        void printPostorder(TreeNode *root)
+        {
+            if (root == NULL)
+                return;
+ 
+            // first recur on left subtree
+            printPostorder(root->left);
+ 
+            // then recur on right subtree
+            printPostorder(root->right);
+         
+            // now deal with the node
+            cout << root->data << " ";
+}
+        void printInorder(TreeNode *root)
+        {
+            if (root == NULL)
+                return;
+ 
+            /* first recur on left child */
+            printInorder(root->left);
+ 
+            /* then print the data of node */
+            cout << root->data << " ";
+ 
+            /* now recur on right child */
+            printInorder(root->right);
+        }
+        //breadth first traversal
+        void printLevel(TreeNode *root)
+        {
+            int h = height(root);
+            int i;
+            for (i = 1; i <= h; i++)
+                printCurrentLevel(root, i);
+        }
+        void printCurrentLevel(TreeNode *root, int level)
+        {
+            if (root == NULL)
+                return;
+            if (level == 1)
+                cout << root->data << " ";
+            else if (level > 1)
+            {
+                printCurrentLevel(root->left, level-1);
+                printCurrentLevel(root->right, level-1);
+            }
+        }
+        
+        int height(TreeNode *root)
+        {
+            if (root == NULL)
+                return 0;
+            else
+            {
+            /* compute the height of each subtree */
+                int lheight = height(root->left);
+                int rheight = height(root->right);
+ 
+                /* use the larger one */
+                if (lheight > rheight)
+                {
+                    return(lheight + 1);
+                }
+                else {
+                    return(rheight + 1);
+                }
+            }
+        }
+        void print2D(TreeNode *root, int space){
+            if(root == NULL)
+                return;
+            space += SPACE;//increase distance
+            print2D(root->right, space); //Process right part
+            cout<<endl;
+            for(int i = SPACE; i < space;i++)
+                cout<<" ";
+            cout<<root->data<<"\n";
+            print2D(root->left, space);//Process left part
+        }
+        void deleteTree(TreeNode *root)
+        {
+            if (root == NULL) 
+                return; 
+  
+            /* first delete both subtrees */
+            deleteTree(root->left); 
+            deleteTree(root->right); 
+      
+            /* then delete the node */
+            delete root;
+        }
+};
+int main (){
+    //Create a menu driven program
+    BST obj;
+    int choice=1;
+    int newdata;
+    
+    while(choice != 0){
+        cout<<endl;
+        cout<<"What BST-Operation would you like to perform?\n"
+        <<"Please choose one of the following:"<<endl;
+        cout <<"Press 1 to insert a Node."<<endl;
+        cout <<"Press 2 to search for a Node."<<endl;
+        cout <<"Press 3 to delete a Node."<<endl;
+        cout <<"Press 4 to Print data of the BST 2D."<<endl;
+        cout <<"Press 5 to Print data of the BST Preordered."<<endl;
+        cout <<"Press 6 to Print data of the BST Inordered."<<endl;
+        cout <<"Press 7 to Print data of the BST Postordered."<<endl;
+        cout <<"Press 8 to Print data of the BST Level Ordered."<<endl;
+        cout <<"Press 9 to delete the BST."<<endl;
+        cout <<"Press 0 to exit."<<endl;
+        //insert value of choice
+        cin>>choice;
+        TreeNode *newNode = new TreeNode();
+        
+        switch(choice){
+            case 0:
+            cout<<"Exiting the Program!"<<endl;
+                break;
+            case 1:
+                cout<<"Inserting a Node:"<<endl;
+                cout<<"Insert the integer data for the Node"<<endl;
+                cin>>newdata;
+                newNode->data=newdata;
+                obj.insert(newNode);
+                break;
+            case 2:
+                cout<<"Insert the value that you would like to search: ";
+                cin>>newdata;
+                cout<<"Searching a Node:"<<endl;
+                newNode = obj.search(obj.root, newdata);
+                break;
+            case 3:
+                cout<<"Insert the value that you would like to be deleted ftom the BST: ";
+                cin>>newdata;
+                cout<<"Deleting a Node:"<<endl;
+                newNode = obj.deleteNode(obj.root, newdata);
+                break;
+            case 4:
+                cout<<"Printing BST in 2D"<< endl;
+                obj.print2D(obj.root, 5);
+                break;
+            case 5:
+                cout<<"Printing BST Preordered"<< endl;
+                obj.printPreorder(obj.root);
+                break;
+            case 6:
+                cout<<"Printing BST Inordered"<< endl;
+                obj.printInorder(obj.root);
+                break;
+            case 7:
+                cout<<"Printing BST Postordered"<< endl;
+                obj.printPostorder(obj.root);
+                break;
+            case 8:
+                cout<<"Printing BSTin Level Ordered"<< endl;
+                obj.printLevel(obj.root);
+                break;
+            case 9:
+                cout <<"Deleting the BST"<<endl;
+                obj.deleteTree(obj.root);
+                break;
+            default:
+                cout<<"You have isert invalid 1value please try again!"<<endl;
+        }
+        
+        
+        
+    }
+    
+    return 0;
+}
